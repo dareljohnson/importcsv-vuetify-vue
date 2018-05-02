@@ -52,10 +52,14 @@
                 >
                     <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
                     <template slot="items" slot-scope="props">
-                        <!-- <td class="text-xs-middle">{{ props.item.ID }}</td> -->
-                        <td class="text-xs-middle">{{ props.item.First_Name }}</td>
-                        <td class="text-xs-middle">{{ props.item.Last_Name }}</td>
-                        <!-- <td class="text-xs-middle">{{ props.item.Email }}</td> -->
+                        <td class="text-xs-middle">{{ props.item.ID }}</td>
+                        <td class="text-xs-middle">{{ props.item.First_Name | capitalize }}</td>
+                        <td class="text-xs-middle">{{ props.item.Last_Name | capitalize }}</td>
+                        <td class="text-xs-middle">{{ props.item.Email }}</td>
+                        <td class="text-xs-middle">{{ props.item.Address | capitalize }}</td>
+                        <td class="text-xs-middle">{{ props.item.City | capitalize }}</td>
+                        <td class="text-xs-middle">{{ props.item.Zip }}</td>
+                        <td class="text-xs-middle">{{ props.item.State }}</td>
                     </template>
                     <template slot="no-data">
                         <v-alert :value="true" color="error" icon="warning">
@@ -83,12 +87,12 @@ export default {
           return {
               contacts:[],
               headers: [
-                  /* {
+                  {
                   text: 'Id',
                   align: 'left',
                   sortable: false,
                   value: 'name'
-                  }, */
+                  },
                   {
                   text: 'First Name',
                   align: 'left',
@@ -100,26 +104,47 @@ export default {
                   align: 'left',
                   sortable: false,
                   value: 'name'
-                  }/* ,
+                  },
                   {
                   text: 'Email',
                   align: 'left',
                   sortable: false,
                   value: 'name'
-                  } */
+                  },
+                  {
+                  text: 'Address',
+                  align: 'left',
+                  sortable: false,
+                  value: 'name'
+                  },
+                  {
+                  text: 'City',
+                  align: 'left',
+                  sortable: false,
+                  value: 'name'
+                  },
+                  {
+                  text: 'Zip',
+                  align: 'left',
+                  sortable: false,
+                  value: 'name'
+                  },
+                  {
+                  text: 'State',
+                  align: 'left',
+                  sortable: false,
+                  value: 'name'
+                  }
               ],
               pagination: {}
           }
       },
       filters:{
           capitalize (str) {
-              return str.charAt(0).toUpperCase() + str.slice(1)
+               return str != undefined ?  str.charAt(0).toUpperCase() + str.slice(1) : str
           }
       },
       computed:{
-          /* contacts (){
-            return this.loadCSV.toList()
-        }, */
         pages () {
             if (this.pagination.rowsPerPage == null ||
             this.pagination.totalItems == null
@@ -131,29 +156,20 @@ export default {
         } 
       },
       methods: {
-        onCreateContact (){
-             
-        },
-        sortBy (key){
-            const vm = this
-            vm.sortKey = key
-            vm.sortOrders[key] = vm.sortOrders[key] * -1
-        },
         csvJSON (csv){
             var vm = this
             var lines = csv.split("\n")
             var result = []
             var headers = lines[0].split(",")
-            vm.parse_header = lines[0].split(",") 
                         
-            lines.map(function(line, indexLine){
+            lines.map((line, indexLine) => {
                 if (indexLine < 1) return // Jump header line
                 
-                var obj = {}
+                const obj = {}
                 var currentline = line.split(",")
                 
-                headers.map(function(header, indexHeader){
-                   obj[header] = currentline[indexHeader]
+                headers.map((header, indexHeader) => {
+                   obj[header.trim()] = currentline[indexHeader]
                 })
                 
                 result.push(obj)
@@ -172,7 +188,6 @@ export default {
             let file = files[0];
             let name = files[0].name;
             //console.log(name);
-            const dataset = []
 
             if (window.FileReader) {
                 let reader = new FileReader();
